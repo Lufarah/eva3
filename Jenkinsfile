@@ -40,7 +40,14 @@ pipeline {
                     ghcr.io/zaproxy/zaproxy:stable \
                     zap-baseline.py \
                     -t http://host.docker.internal:5000 \
-                    -r zap_report.html || true
+                    -j zap_report.json || true
+
+                    # covertir JSON a HTML
+
+                    docker run -- rm \
+                        -v ${WORKSPACE}:/zap/wrk \
+                        ghcr.io/zaproxy/zaproxy:stable \
+                        zap-cli report -f html -o zap_report.html -i zap_report.json
                 """
             }
         }
