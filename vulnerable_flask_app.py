@@ -2,22 +2,17 @@ from flask import Flask, request, render_template_string, session, redirect, url
 import sqlite3
 import os
 import hashlib
-
 from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
 
-REQUESTS = Counter("requests_total", "Total de requests", ["endpoint"])
+REQUESTS = Counter('app_requests_total', 'Total HTTP requests', ['endpoint'])
 
-@app.before_request
-def track():
-    REQUESTS.labels(request.endpoint).inc()
 
-@app.route('/metrics')
-def metrics():
-    return generate_latest(), 200, {'Content-Type': CONTENT_TYPE_LATEST}
+
 
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+app.secret_key = os.environ.get('SECRET_KEY',os.urandom(24))
+csrf = CSRFProtect(app)
 
 
 def get_db_connection():
@@ -25,9 +20,20 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+@app.before_request
+def before_request():
+    try:
+        endpoint = request.endpoint or 'unknown'
+    except:
+        endpoint = 'unknown'
+    REQUESTS.labels(endpoint=endpoint).inc()
 
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
+
+@app.route('/metrics')
+def metrics():
+    return generate_latest(), 200, {'Content-Type': CONTENT_TYPE_LATEST}
 
 
 @app.route('/')

@@ -1,7 +1,8 @@
+#Luciano Salas 21.301.897-3
 global:
-  scrape_interval: 5s
+  scrape_interval: 15s
 
 scrape_configs:
-  - job_name: 'flask'
+  - job_name: 'flask_app'
     static_configs:
       - targets: ['web:5000']
