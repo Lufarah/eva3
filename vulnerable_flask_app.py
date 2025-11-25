@@ -3,6 +3,19 @@ import sqlite3
 import os
 import hashlib
 
+from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
+
+REQUESTS = Counter("requests_total", "Total de requests", ["endpoint"])
+
+@app.before_request
+def track():
+    REQUESTS.labels(request.endpoint).inc()
+
+@app.route('/metrics')
+def metrics():
+    return generate_latest(), 200, {'Content-Type': CONTENT_TYPE_LATEST}
+
+
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
