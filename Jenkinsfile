@@ -34,7 +34,7 @@ pipeline {
             steps {
                 sh '''
                 docker run --rm \
-                    -v $WORKSPACE:/zap/wrk:rw \
+                    -v $WORKSPACE:/zap/wrk:z \
                     ghcr.io/zaproxy/zaproxy:stable \
                     zap-baseline.py \
                     -t http://host.docker.internal:5000 \
