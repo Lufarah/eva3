@@ -16,17 +16,17 @@ pipeline {
 
         stage('Build Image') {
             steps {
-                sh 'docker build -t ${IMAGE_NAME} .'
+                sh "docker build -t ${IMAGE_NAME} ."
             }
         }
 
         stage('Run App Container') {
             steps {
-                sh '''
+                sh """
                 docker rm -f ${APP_CONTAINER} || true
                 docker run -d --name ${APP_CONTAINER} -p 5000:5000 ${IMAGE_NAME}
                 sleep 5
-                '''
+                """
             }
         }
 
@@ -34,7 +34,8 @@ pipeline {
             steps {
                 sh """
                 docker run --rm \
-                    -v ${WORKSPACE}:/zap/wrk:z \
+                    --user root \
+                    -v ${WORKSPACE}:/zap/wrk \
                     ghcr.io/zaproxy/zaproxy:stable \
                     zap-baseline.py \
                     -t http://host.docker.internal:5000 \
@@ -52,7 +53,7 @@ pipeline {
 
     post {
         always {
-            sh 'docker rm -f ${APP_CONTAINER} || true'
+            sh "docker rm -f ${APP_CONTAINER} || true"
         }
     }
 }
