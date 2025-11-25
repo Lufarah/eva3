@@ -39,7 +39,7 @@ pipeline {
                     ghcr.io/zaproxy/zaproxy:stable \
                     zap-baseline.py \
                     -t http://host.docker.internal:5000 \
-                    -r zap_report.html || true
+                    -r /zap/wrk/zap_report.html || true
                 """
             }
         }
