@@ -1,6 +1,6 @@
 #Luciano Salas 21.301.897-3
 Flask==3.0.0
-Werkzeug==3.0.1
+Werkzeug==3.1.4
 gunicorn
 prometheus_client
 Flask-WTF
